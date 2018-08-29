@@ -7,6 +7,10 @@
     "test": "test",
     "start": "node cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/byuitechops/canvas-course-exporter.git"
+  },
   "author": "Seth Childers",
   "license": "MIT",
   "dependencies": {
