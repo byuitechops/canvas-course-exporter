@@ -1,0 +1,20 @@
+{
+  "name": "course-copy",
+  "version": "1.0.0",
+  "description": "This cli will back-up each Canvas Master Course each week, automatically.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "node cli.js"
+  },
+  "author": "Seth Childers",
+  "license": "MIT",
+  "dependencies": {
+    "canvas-api-wrapper": "^3.3.3",
+    "d3-dsv": "^1.0.10",
+    "fs": "0.0.1-security",
+    "got": "^9.1.0",
+    "promise-limit": "^2.7.0",
+    "prompt": "^1.0.0"
+  }
+}
