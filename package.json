@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/byuitechops/canvas-course-exporter.git"
   },
-  "author": "Seth Childers",
+  "author": "Seth Childers and Benjamin Earl",
   "license": "MIT",
   "dependencies": {
     "canvas-api-wrapper": "^3.3.3",
