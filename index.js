@@ -11,6 +11,11 @@ const ProgressBar = require('progress');
 // The user input from the cli
 let input;
 
+/**
+ * Get the courses from the CSV file found with 
+ * the path the user specified in the cli
+ * @param {Object} userInput 
+ */
 function getCourses(userInput) {
     // Pathway might not be a subdomain
     canvas.subdomain = userInput.domain;
@@ -28,6 +33,13 @@ function getCourses(userInput) {
     return courses;
 }
 
+/**
+ * Export the course, update the progress bar when the course is updated,
+ * and download the exported course into a time-stamped folder
+ * @param {Object} course The course's name and id
+ * @param {Object} bar The progress bar that is updated once the course is exported and downloaded
+ * @param {String} folderDate The date string used to name the version folder and each course backup file
+ */
 async function exportCourse(course, bar, folderDate) {
     try {
         // start the course export in a ".imscc" format
@@ -74,7 +86,11 @@ async function exportCourse(course, bar, folderDate) {
     }    
 }    
 
-async function checkVersions() {
+/**
+ * After backing up all the courses, check if there are too many versions saved,
+ * based on the input from the user, and delete all of the older versions
+ */
+async function checkVersions() { // I don't think this needs to be asynchronous
     let fileNames = fs.readdirSync('courseBackups');
     // check if any existing versions need to be deleted
     if (fileNames.length > input['Number of Versions to Keep']) {
@@ -103,6 +119,9 @@ async function checkVersions() {
     return;
 }
 
+/**
+ * The function that runs most of the code on a consistent time basis
+ */
 async function main() {
     try {
         // get an array of courses that need to be backed-up
@@ -130,6 +149,11 @@ async function main() {
     }
 }
 
+/**
+ * The function that runs the timer. It will run main 
+ * consistently according to the time input from the user 
+ * @param {Object} userInput The user's input from the cli
+ */
 function runTimer(userInput) {
     input = userInput;
     timer(main);
@@ -137,5 +161,4 @@ function runTimer(userInput) {
 
 module.exports = {
     runTimer,
-    input
 }
