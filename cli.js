@@ -1,6 +1,7 @@
 var prompt = require('prompt');
 var courseBackup = require('./index.js');
 
+// MAKE THIS A GLOBALLY INSTALLED CLI
 function getInput() {
     return new Promise((resolve, reject) => {
         // prompt to receive the filepath to the list of courses to run the backup on
@@ -13,11 +14,17 @@ function getInput() {
                     required: true,
                     default: 'byui'
                 },
-                path: {
+                'Course List Path': {
                     type: 'string',
                     message: `(i.e. './myfile.csv')`,
                     required: true,
-                    default: './sandbox.csv'
+                    default: './sandbox.csv' // REMOVE
+                },
+                'Number of Versions to Keep': {
+                    type: 'string',
+                    message: 'how many versions of each course would you like to keep? (must be a number)',
+                    require: true,
+                    default: 5
                 }
             }
         };
@@ -36,7 +43,7 @@ function getInput() {
 
 async function run() {
     var userInput = await getInput()
-    courseBackup.main(userInput);
+    courseBackup.runTimer(userInput);
 }
 
 run();

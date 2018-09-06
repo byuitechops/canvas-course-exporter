@@ -1,2 +1,4 @@
 /node_modules
+/courseBackups
 *.csv
+*.mp4

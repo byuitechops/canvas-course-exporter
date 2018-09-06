@@ -15,10 +15,15 @@
   "license": "MIT",
   "dependencies": {
     "canvas-api-wrapper": "^3.3.3",
+    "chalk-animation": "^1.6.0",
     "d3-dsv": "^1.0.10",
+    "del": "^3.0.0",
     "fs": "0.0.1-security",
     "got": "^9.1.0",
+    "moment": "^2.22.2",
+    "progress": "^2.0.0",
     "promise-limit": "^2.7.0",
-    "prompt": "^1.0.0"
+    "prompt": "^1.0.0",
+    "repeat-timer": "git+https://github.com/byuitechops/repeat-timer.git"
   }
 }
