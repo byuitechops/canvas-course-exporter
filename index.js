@@ -2,11 +2,12 @@ const canvas = require('canvas-api-wrapper');
 const fs = require('fs');
 const d3 = require('d3-dsv');
 const del = require('del');
-var moment = require("moment")
+const moment = require("moment")
 const queue = require('promise-limit')(5);
 const got = require('got');
 const timer = require('repeat-timer');
 const ProgressBar = require('progress');
+const path = require('path');
 
 // The user input from the cli
 let input;
@@ -20,7 +21,7 @@ function getCourses(userInput) {
     // Pathway might not be a subdomain
     canvas.subdomain = userInput.domain;
     // read the file into a string to be parsed
-    let file = fs.readFileSync(userInput['Course List Path'], 'utf8');
+    let file = fs.readFileSync(userInput.courseListPath, 'utf8');
     // format the csv into an array of the course id's
     let courses = d3.csvParse(file, row => {
         return {
@@ -62,19 +63,21 @@ async function exportCourse(course, bar, folderDate) {
         let downloadedCourse = await canvas(`/api/v1/courses/${course.courseId}/content_exports/${contentExport.id}`);
         let url = downloadedCourse.attachment.url;
 
+
+        
         // make a 'courseBackups' directory if it doesn't already exist
-        if (!fs.existsSync('courseBackups')) {
-            fs.mkdirSync('courseBackups');
+        if (!fs.existsSync(path.resolve('courseBackups'))) {
+            fs.mkdirSync(path.resolve('courseBackups'));
         }    
 
         // make a 'current date' directory if it doesn't already exist for this set of backup courses
-        if (!fs.existsSync(`courseBackups/${folderDate}`)) {
-            fs.mkdirSync(`courseBackups/${folderDate}`);
+        if (!fs.existsSync(path.resolve(`courseBackups/${folderDate}`))) {
+            fs.mkdirSync(path.resolve(`courseBackups/${folderDate}`));
         }    
 
         // now that you have the url, pipe the contents of the url to a file
         await new Promise((res, rej) => {
-            got.stream(url).pipe(fs.createWriteStream(`courseBackups/${folderDate}/${course.courseName}-ID${course.courseId}-${folderDate}.imscc`))
+            got.stream(url).pipe(fs.createWriteStream(path.resolve(`courseBackups/${folderDate}/${course.courseName}-ID${course.courseId}-${folderDate}.imscc`)))
                 .on('finish', res)
                 .on('error', rej)
         });        
@@ -93,7 +96,7 @@ async function exportCourse(course, bar, folderDate) {
 async function checkVersions() { // I don't think this needs to be asynchronous
     let fileNames = fs.readdirSync('courseBackups');
     // check if any existing versions need to be deleted
-    if (fileNames.length > input['Number of Versions to Keep']) {
+    if (fileNames.length > input.versions) {
         let versions = fileNames.map(file => {
             let stats = fs.statSync(`courseBackups/${file}`);
             return {

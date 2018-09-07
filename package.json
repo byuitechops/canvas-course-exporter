@@ -21,6 +21,7 @@
     "fs": "0.0.1-security",
     "got": "^9.1.0",
     "moment": "^2.22.2",
+    "path": "^0.12.7",
     "progress": "^2.0.0",
     "promise-limit": "^2.7.0",
     "prompt": "^1.0.0",

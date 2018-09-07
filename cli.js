@@ -9,25 +9,42 @@ function getInput() {
             properties: {
                 domain: {
                     type: 'string',
+                    description: 'Canvas Domain',
                     pattern: /pathway|byui|byui\.test/,
                     message: `<pathway/byui/byui.test>`,
                     required: true,
                     default: 'byui'
                 },
-                'Course List Path': {
+                courseListPath: {
                     type: 'string',
-                    message: `(i.e. './myfile.csv')`,
+                    description: 'Course List Path',
+                    message: `The path to the courses list file (i.e. './myfile.csv')`,
                     required: true,
                     default: './sandbox.csv' // REMOVE
                 },
-                'Number of Versions to Keep': {
+                saveDirectory: {
                     type: 'string',
-                    message: 'how many versions of each course would you like to keep? (must be a number)',
+                    description: `New Directory Name`,
+                    required: false,
+                    default: 'courseBackups'
+                },
+                saveDirectoryPath: {
+                    type: 'string',
+                    description: `New Directory Path`,
+                    required: false,
+                    default: '.'
+                },
+                versions: {
+                    type: 'string',
+                    description: 'Number of Versions to Keep',
+                    message: 'How many versions of each course would you like to keep? (must be a number)',
                     require: true,
                     default: 5
                 }
             }
         };
+
+        prompt.message = '';
 
         prompt.start();
 
