@@ -1,7 +1,9 @@
 var prompt = require('prompt');
 var courseBackup = require('./index.js');
 
-// MAKE THIS A GLOBALLY INSTALLED CLI
+/**
+ * The function with all the prompt inputs and validation
+ */
 function getInput() {
     return new Promise((resolve, reject) => {
         // prompt to receive the filepath to the list of courses to run the backup on
@@ -18,26 +20,24 @@ function getInput() {
                 courseListPath: {
                     type: 'string',
                     description: 'Course List Path',
-                    message: `The path to the courses list file (i.e. './myfile.csv')`,
                     required: true,
                     default: './sandbox.csv' // REMOVE
                 },
                 saveDirectory: {
                     type: 'string',
                     description: `New Directory Name`,
-                    required: false,
+                    required: true, 
                     default: 'courseBackups'
                 },
                 saveDirectoryPath: {
                     type: 'string',
                     description: `New Directory Path`,
-                    required: false,
+                    required: true,
                     default: '.'
                 },
                 versions: {
                     type: 'string',
                     description: 'Number of Versions to Keep',
-                    message: 'How many versions of each course would you like to keep? (must be a number)',
                     require: true,
                     default: 5
                 }
