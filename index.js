@@ -9,9 +9,6 @@ const got = require('got');
 const timer = require('repeat-timer');
 const ProgressBar = require('progress');
 
-// The user input from the cli
-let input;
-
 /**
  * Get the courses from the CSV file found with 
  * the path the user specified in the cli
@@ -91,14 +88,15 @@ async function exportCourse(course, bar, folderDate, newDirectoryPath) {
 /**
  * After backing up all the courses, check if there are too many versions saved,
  * based on the input from the user, and delete all of the older versions
+ * @param {Object} userInput The user's input from the cli
  * @param {String} newDirectoryPath The path to the directory where things will be saved to
  */
-async function checkVersions(newDirectoryPath) {
+async function checkVersions(userInput, newDirectoryPath) {
     // fs.readdirSync returns a list of all files and directories in a directory,
     // but there should only be directories inside of this new directory
     let folderNames = fs.readdirSync(newDirectoryPath);
     // check if any existing versions need to be deleted
-    if (folderNames.length > input.versions) {
+    if (folderNames.length > userInput.versions) {
         let versions = folderNames.map(file => {
             let stats = fs.statSync(path.join(newDirectoryPath, file));
             return {
@@ -119,21 +117,22 @@ async function checkVersions(newDirectoryPath) {
         console.log(`Deleted version directory ${deletedVersion[0]}`);
 
         // run the function recursively as long as there are more version directories than the user specified amount
-        checkVersions(newDirectoryPath);
+        checkVersions(userInput, newDirectoryPath);
     }
     return;
 }
 
 /**
  * The function that runs most of the code on a consistent time basis
+ * @param {Object} userInput The user's input from the cli
  */
-async function main() {
+async function main(userInput) {
     try {
         // the path to the new directory
-        let newDirectoryPath = path.resolve(path.join(input.saveDirectoryPath, input.saveDirectory));
+        let newDirectoryPath = path.resolve(path.join(userInput.saveDirectoryPath, userInput.saveDirectory));
 
         // get an array of courses that need to be backed-up
-        let courses = getCourses(input);
+        let courses = getCourses(userInput);
         let bar = new ProgressBar(' Backing up courses [:bar] :percent', {
             total: courses.length,
             complete: '=',
@@ -150,7 +149,7 @@ async function main() {
         await Promise.all(promises);
 
         // delete the oldest versions if there are more than the specified number of versions to be kept
-        await checkVersions(newDirectoryPath);
+        await checkVersions(userInput, newDirectoryPath);
         console.log('All courses have been backed up successfully', '\n');
     } catch (err) {
         console.error(err);
@@ -163,8 +162,10 @@ async function main() {
  * @param {Object} userInput The user's input from the cli
  */
 function runTimer(userInput) {
-    input = userInput;
-    timer(main);
+    // start the timer to run main in a timed interval defined by the user in the cli
+    timer(() => {
+        main(userInput);
+    });
 }
 
 module.exports = {
