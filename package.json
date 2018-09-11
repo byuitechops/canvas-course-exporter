@@ -20,6 +20,7 @@
     "del": "^3.0.0",
     "fs": "0.0.1-security",
     "got": "^9.1.0",
+    "logger": "github:byuitechops/logger",
     "moment": "^2.22.2",
     "path": "^0.12.7",
     "progress": "^2.0.0",

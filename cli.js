@@ -12,8 +12,8 @@ function getInput() {
                 domain: {
                     type: 'string',
                     description: 'Canvas Domain',
-                    pattern: /pathway|byui|byui\.test/,
-                    message: `<pathway/byui/byui.test>`,
+                    pattern: /byui|byui\.test/,
+                    message: `<byui|byui.test>`,
                     required: true,
                     default: 'byui'
                 },

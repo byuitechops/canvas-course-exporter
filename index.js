@@ -8,22 +8,41 @@ const queue = require('promise-limit')(5);
 const got = require('got');
 const timer = require('repeat-timer');
 const ProgressBar = require('progress');
+const Logger = require('logger');
+const logger = new Logger('Canvas Course Exports');
 
 /**
  * Get the courses from the CSV file found with 
  * the path the user specified in the cli
  * @param {Object} userInput 
  */
-function getCourses(userInput) {
-    // Pathway might not be a subdomain
+async function getCourses(userInput) {
+    // Pathway is not a subdomain
     canvas.subdomain = userInput.domain;
+
+    // get all courses from the Master Courses subaccount (i.e. 42)
+    let returnedCourses = await canvas.get(`/api/v1/accounts/42/courses`, {
+        sort: 'course_name',
+        'include[]': 'subaccount'
+    });
+
+    // although we got everything under account 42, not
+    // everything belongs to it since there are subaccounts
+    returnedCourses = returnedCourses.filter(course => course.account_id === 42);
+    
+    // create a csv of what we're running it all on
+    let d3Courses = d3.csvFormat(returnedCourses,["id",'name','subaccount_name']);
+
+    let coursesFile = fs.writeFileSync('master_courses.csv', d3Courses);
+
     // read the file into a string to be parsed
-    let file = fs.readFileSync(userInput.courseListPath, 'utf8');
+    // let file = fs.readFileSync(userInput.courseListPath, 'utf8');
+    let file = fs.readFileSync('master_courses.csv', 'utf8');
     // format the csv into an array of the course id's
     let courses = d3.csvParse(file, row => {
         return {
             courseId: row.id,
-            courseName: row.course_name
+            courseName: row.name
         }
     });
     // remove the column headings from the array
@@ -132,7 +151,7 @@ async function main(userInput) {
         let newDirectoryPath = path.resolve(path.join(userInput.saveDirectoryPath, userInput.saveDirectory));
 
         // get an array of courses that need to be backed-up
-        let courses = getCourses(userInput);
+        let courses = await getCourses(userInput);
         let bar = new ProgressBar(' Backing up courses [:bar] :percent', {
             total: courses.length,
             complete: '=',
@@ -163,8 +182,8 @@ async function main(userInput) {
  */
 function runTimer(userInput) {
     // start the timer to run main in a timed interval defined by the user in the cli
-    timer(() => {
-        main(userInput);
+    timer(async () => {
+        await main(userInput);
     });
 }
 
