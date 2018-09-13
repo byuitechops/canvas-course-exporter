@@ -1,15 +1,15 @@
-const canvas = require('canvas-api-wrapper');
-const fs = require('fs');
-const path = require('path');
-const d3 = require('d3-dsv');
-const moment = require("moment")
-const del = require('del');
-const queue = require('promise-limit')(5);
-const got = require('got');
-const timer = require('repeat-timer');
-const ProgressBar = require('progress');
-const Logger = require('logger');
-const logger = new Logger('Canvas Course Exports');
+const canvas = require('canvas-api-wrapper'); // CRUD operations for Canvas
+const fs = require('fs'); // file manipulation
+const path = require('path'); // file path handling
+const d3 = require('d3-dsv'); // csv manipulation
+const moment = require("moment") // helps format the dates and times
+const del = require('del'); // deletes an entire directory
+const queue = require('promise-limit')(5); // runs 5 course exports at a time
+const got = require('got'); // helps with file streaming
+const timer = require('repeat-timer'); // cli that repeats the function on a timely basis
+const ProgressBar = require('progress'); // the progress bar in the console
+const filenamify = require('filenamify'); // removes special characters from course names for file naming
+const unusedFilename = require('unused-filename'); // adds (1), (2), etc for duplicate filenames
 
 /**
  * Get the courses from the CSV file found with 
@@ -33,7 +33,7 @@ async function getCourses(userInput) {
     // create a csv of what we're running it all on
     let d3Courses = d3.csvFormat(returnedCourses,["id",'name','subaccount_name']);
 
-    let coursesFile = fs.writeFileSync('master_courses.csv', d3Courses);
+    fs.writeFileSync('master_courses.csv', d3Courses);
 
     // read the file into a string to be parsed
     // let file = fs.readFileSync(userInput.courseListPath, 'utf8');
@@ -92,7 +92,10 @@ async function exportCourse(course, bar, folderDate, newDirectoryPath) {
 
         // now that you have the url, pipe the contents of the url to a file
         await new Promise((res, rej) => {
-            got.stream(url).pipe(fs.createWriteStream(path.join(newDirectoryPath, folderDate, `${course.courseName}-ID${course.courseId}-${folderDate}.imscc`)))
+            let filename = `${course.courseName} ID${course.courseId} ${folderDate}.imscc`;
+            let writePath = unusedFilename.sync(path.join(newDirectoryPath, folderDate, filenamify(filename, {replacement: ' '})));
+
+            got.stream(url).pipe(fs.createWriteStream(writePath))
                 .on('finish', res)
                 .on('error', rej)
         });

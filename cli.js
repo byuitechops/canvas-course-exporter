@@ -17,12 +17,13 @@ function getInput() {
                     required: true,
                     default: 'byui'
                 },
-                courseListPath: {
-                    type: 'string',
-                    description: 'Course List Path',
-                    required: true,
-                    default: './sandbox.csv' // REMOVE
-                },
+                // ADD THIS FUNCTIONALLITY LATER
+                // courseListPath: {
+                //     type: 'string',
+                //     description: 'Course List Path',
+                //     required: true,
+                //     default: './sandbox.csv' // REMOVE
+                // },
                 saveDirectory: {
                     type: 'string',
                     description: `New Directory Name`,
