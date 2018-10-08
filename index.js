@@ -23,7 +23,8 @@ async function getCourses(userInput) {
     // get all courses from the Master Courses subaccount (i.e. 42)
     let returnedCourses = await canvas.get(`/api/v1/accounts/42/courses`, {
         sort: 'course_name',
-        'include[]': 'subaccount'
+        'include[]': 'subaccount',
+        search_term: 'Jesus Christ and the Everlasting Gospel (Online Master Course Council View)'
     });
 
     // although we got everything under account 42, not
@@ -92,9 +93,16 @@ async function exportCourse(course, bar, folderDate, newDirectoryPath) {
 
         // now that you have the url, pipe the contents of the url to a file
         await new Promise((res, rej) => {
-            let filename = `${course.courseName} ID${course.courseId} ${folderDate}.imscc`;
-            let writePath = unusedFilename.sync(path.join(newDirectoryPath, folderDate, filenamify(filename, {replacement: ' '})));
+            let filename = `${course.courseName}_ID${course.courseId}_${folderDate}.imscc`;
 
+            // if the filename is over 100 characters, then remove characters from the course name
+            let charsToRemove = filename.length - 100;
+            filename = filename.length <= 100 ? filename : `${course.courseName.slice(0, course.courseName.length - charsToRemove)}_ID${course.courseId}_${folderDate}.imscc`;
+            
+            // replace all special characters, check to make sure the filename isn't already used, then create the path to write the file to
+            let writePath = unusedFilename.sync(path.join(newDirectoryPath, folderDate, filenamify(filename, {replacement: ' '})));
+            
+            // write the file
             got.stream(url).pipe(fs.createWriteStream(writePath))
                 .on('finish', res)
                 .on('error', rej)
@@ -163,7 +171,7 @@ async function main(userInput) {
         });
 
         // format the current date
-        let folderDate = moment().format("YYYY[Y]-MM[M]-DD[D] kk[h]mm[m]");
+        let folderDate = moment().format("YYYY[Y]-MM[M]-DD[D]_kk[h]mm[m]");
         console.log(`Starting course backups on ${folderDate}`);
 
         // setup the queue to run exportCourse in parallel (i.e. run it for a specified number of courses at a time)
