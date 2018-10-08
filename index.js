@@ -24,7 +24,6 @@ async function getCourses(userInput) {
     let returnedCourses = await canvas.get(`/api/v1/accounts/42/courses`, {
         sort: 'course_name',
         'include[]': 'subaccount',
-        search_term: 'Jesus Christ and the Everlasting Gospel (Online Master Course Council View)'
     });
 
     // although we got everything under account 42, not
